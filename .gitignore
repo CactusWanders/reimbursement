@@ -1,0 +1,11 @@
+/.idea
+node_modules
+.DS_Store
+npm-debug.log
+.*.swp
+.*.swo
+outputnpm
+dist
+dest
+externals
+*/package-lock.json

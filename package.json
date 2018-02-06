@@ -1,0 +1,22 @@
+{
+  "name": "reimbursement",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Reimbursement.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CactusWanders/reimbursement.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CactusWanders/reimbursement/issues"
+  },
+  "homepage": "https://github.com/CactusWanders/reimbursement#readme",
+  "dependencies": {
+    "node-xlsx": "^0.11.2"
+  }
+}
