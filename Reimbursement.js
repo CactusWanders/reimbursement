@@ -1,6 +1,7 @@
 var xlsx = require('node-xlsx').default;
 var fs = require('fs');
 var htmlData = require('./document.js');
+var config = require('./config.js');
 
 
 let XLSX = {
@@ -12,19 +13,21 @@ let XLSX = {
 XLSX.init =  function () {
     htmlData.init().then(function(data){
         this.finalFileName = XLSX.getMonth() + "费用报销表.xlsx";
-        for(let item of data) { 
-            let filePath = __dirname + '/bx/' + item.name;
-            let res = XLSX.readFile(filePath);
-            if (item.taxi != res.taxi || item.food != res.food || data.all != res.all) {
-                console.log(item.name, ' TAXI ', res.taxi, ' FOOD ', res.food, ' ALL ', res.all);
+        setTimeout(() => {
+            for(let item of data) { 
+                let filePath = config.path+ item.name + '.' + config.extension;
+                let res = XLSX.readFile(filePath);
+                if (item.taxi != res.taxi || item.food != res.food || data.all != res.all) {
+                    console.log(item.name, ' TAXI ', res.taxi, ' FOOD ', res.food, ' ALL ', res.all);
+                }
             }
-        }
-        XLSX.addExtral();
+            XLSX.addExtral();
 
-        fs.writeFileSync(this.finalFileName, xlsx.build([{
-            name: 'sheet1',
-            data: this.finalData
-        }]), {'flag':'w'});
+            fs.writeFileSync(this.finalFileName, xlsx.build([{
+                name: 'sheet1',
+                data: this.finalData
+            }]), {'flag':'w'});
+        }, 2000);
     });
 }
 XLSX.readFile = function (filePath) {

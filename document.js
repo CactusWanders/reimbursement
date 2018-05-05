@@ -4,6 +4,8 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var url = require('url');
 var request = require('request');
+var xlsx = require('node-xlsx').default;
+var XLSX = require('./Reimbursement.js');
 
 let Document = {
     html: '',
@@ -34,7 +36,8 @@ Document.init = function() {
                         food: currentTD.next('td').next('td').text(),
                         all: currentTD.next('td').next('td').next('td').text()
                     });
-                    let filePath = __dirname + '/bx/' + name + '.xlsx';
+                    let filePath = config.path + name + '.' + config.extension;
+
                     request(req.protocol + '//'+ req.host + href).pipe(fs.createWriteStream(filePath));
                 });
                 resolve(data);
