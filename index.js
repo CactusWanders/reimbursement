@@ -1,3 +1,9 @@
-var XLSX = require('./Reimbursement.js');
+var fs = require('fs');
+var config = require('./config.js');
 
-XLSX.init();
+var {delAllInFoler} = require('./helper.js');
+var Reimbursement = require('./Reimbursement.js');
+
+delAllInFoler(config.path);
+
+Reimbursement.init();

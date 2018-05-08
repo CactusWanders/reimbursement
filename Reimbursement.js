@@ -3,34 +3,46 @@ var fs = require('fs');
 var htmlData = require('./document.js');
 var config = require('./config.js');
 
-
-let XLSX = {
+let Reimbursement = {
    foodFee: 0,
    taxFee: 0,
-   finalData: [[ '员工 ID', '姓名', '部门名称', '打卡时间', '进/出', '加班误餐费', '交通费', '合计' ]]
+   finalData: [config.header]
 }
 
-XLSX.init =  function () {
+Reimbursement.init =  function () {
+    var self = this;
     htmlData.init().then(function(data){
-        this.finalFileName = XLSX.getMonth() + "费用报销表.xlsx";
+        this.finalFileName = config.path + Reimbursement.getMonth() + "用户三组加班报销表.xlsx";
         setTimeout(() => {
-            for(let item of data) { 
-                let filePath = config.path+ item.name + '.' + config.extension;
-                let res = XLSX.readFile(filePath);
-                if (item.taxi != res.taxi || item.food != res.food || data.all != res.all) {
-                    console.log(item.name, ' TAXI ', res.taxi, ' FOOD ', res.food, ' ALL ', res.all);
+            for(let item of data) {
+                let filePath = item.filePath;
+                let res = Reimbursement.readFile(filePath);
+                let log = '';
+                if (item.taxi != res.taxi) {
+                    log += ('出租费');
+                } else if (item.food != res.food) {
+                    log += ('餐补费');
+                } else if (item.all != res.all) {
+                    log += ('总额');
                 }
+                console.log(item.name, ' TAXI ', res.taxi, ' FOOD ', res.food, ' ALL ', res.all, log);
             }
-            XLSX.addExtral();
-
+            self.finalData.push([ ])
+            self.finalData.push([ ])
+            self.finalData.push([ , , , , , , '报销金额:', self.foodFee + self.taxFee ])
+            self.finalData.push([ , , , , , , '餐饮发票:', self.foodFee ])
+            self.finalData.push([ , , , , , , '交通费发票:', self.taxFee ])
             fs.writeFileSync(this.finalFileName, xlsx.build([{
                 name: 'sheet1',
-                data: this.finalData
+                data: self.finalData
             }]), {'flag':'w'});
+
+            console.log('');
+            console.log('( 用户产品三组 (28) ) -- 本月汇总：', (self.foodFee + self.taxFee) ,' ，打车：', self.taxFee, '，餐补：', self.foodFee);
         }, 2000);
     });
 }
-XLSX.readFile = function (filePath) {
+Reimbursement.readFile = function (filePath) {
     var thisTaxFee = 0;
     var thisFoodFee = 0;
     var data = xlsx.parse(filePath);
@@ -51,18 +63,9 @@ XLSX.readFile = function (filePath) {
     }
 };
 
-XLSX.getMonth = function () {
+Reimbursement.getMonth = function () {
   var now = new Date();
   var result = (now.getFullYear() - 2000) + (now.getMonth().length === 1 ? now.getMonth() : '0'+now.getMonth());
   return result;
 }
-XLSX.addExtral = function () {
-    console.log('');
-    console.log('( 用户产品三组 (28) ) -- 本月汇总：', (this.foodFee + this.taxFee) ,' ，打车：', this.taxFee, '，餐补：', this.foodFee);
-    this.finalData.push([ , , , , , , , ])
-    this.finalData.push([ , , , , , , , ])
-    this.finalData.push([ , , , , , , '报销金额:', this.foodFee + this.taxFee ])
-    this.finalData.push([ , , , , , , '餐饮发票:', this.foodFee ])
-    this.finalData.push([ , , , , , , '交通费发票:', this.taxFee ])
-}
-module.exports = XLSX;
+module.exports = Reimbursement;

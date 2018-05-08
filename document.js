@@ -29,15 +29,16 @@ Document.init = function() {
                     let href = $(this).attr('href');
                     let name = currentTD.prev('td').text();
                     let req = url.parse(config.url);
+                    const myURL = url.parse(req.protocol + '//'+ req.host + href);
+                    let filePath = config.path + myURL.pathname.split('/').pop();
                     data.push({
                         href: href,
                         name: name,
                         taxi: currentTD.next('td').text(),
                         food: currentTD.next('td').next('td').text(),
-                        all: currentTD.next('td').next('td').next('td').text()
+                        all: currentTD.next('td').next('td').next('td').text(),
+                        filePath: filePath
                     });
-                    let filePath = config.path + name + '.' + config.extension;
-
                     request(req.protocol + '//'+ req.host + href).pipe(fs.createWriteStream(filePath));
                 });
                 resolve(data);
@@ -46,7 +47,7 @@ Document.init = function() {
             reject(d);
         });
     });
-    
+
 }
 
 Document.getData = function() {
@@ -88,5 +89,3 @@ Document.onEnd = function (res) {
     resolve(this.data);
 }
 module.exports = Document;
-
-
